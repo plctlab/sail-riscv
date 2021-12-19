@@ -54,3 +54,4 @@ function clause execute(RISCV_ZICBOZ(rs1)) = {
     RETIRE_FAIL
   }
 }
+

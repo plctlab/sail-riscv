@@ -59,3 +59,4 @@ function clause execute(RISCV_ZICBOP(prop, rs1, offset)) = {
     }
   }
 }
+

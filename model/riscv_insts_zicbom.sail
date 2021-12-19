@@ -107,3 +107,4 @@ function clause execute(RISCV_ZICBOM(cbop, rs1)) = {
     Some(CBO_INVAL) => process_clean_inval(vaddr, cache_block_size, false, true)
   }
 }
+
