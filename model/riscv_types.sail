@@ -389,8 +389,9 @@ enum sopw = {RISCV_SLLIW, RISCV_SRLIW,
 enum amoop = {AMOSWAP, AMOADD, AMOXOR, AMOAND, AMOOR,
               AMOMIN, AMOMAX, AMOMINU, AMOMAXU}   /* AMO ops */
 enum csrop = {CSRRW, CSRRS, CSRRC}                /* CSR ops */
-enum cbop = {CBO_CLEAN, CBO_FLUSH, CBO_INVAL, CBO_ZERO}  /* cbo ops*/
-enum preop = {PREFETCH_I, PREFETCH_R, PREFETCH_W} /* prefetch ops*/
+
+enum cbop_zicbom = {CBO_CLEAN, CBO_FLUSH, CBO_INVAL}  /* zicbom ops*/
+enum prop_zicbop = {PREFETCH_I, PREFETCH_R, PREFETCH_W} /* zicbop ops*/
 
 enum brop_zba = {RISCV_SH1ADD, RISCV_SH2ADD, RISCV_SH3ADD}
 
