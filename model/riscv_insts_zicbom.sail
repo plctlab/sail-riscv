@@ -28,7 +28,7 @@ function process_clean_inval(vaddr, width, clean, inval) = {
   let load: option(ExceptionType) = match ext_data_get_addr(zeros(), vaddr, Read(Data), BYTE) {
     Ext_DataAddr_Error(e) => Some(E_Reserved_14()),
     Ext_DataAddr_OK(vaddr) =>
-      match translateAddr(vaddr, Read(Data)) {
+      match translateAddr(vaddr, Read(Cbo)) {
         TR_Failure(e, _) => Some(e),
         TR_Address(paddr, _) => None()
       }
@@ -39,7 +39,7 @@ function process_clean_inval(vaddr, width, clean, inval) = {
       let store: option(ExceptionType) = match ext_data_get_addr(zeros(), vaddr, Write(Data), BYTE) {
         Ext_DataAddr_Error(e) => Some(E_Reserved_14()),
         Ext_DataAddr_OK(vaddr) =>
-          match translateAddr(vaddr, Write(Data)) {
+          match translateAddr(vaddr, Write(Cbo)) {
             TR_Failure(e, _) => Some(e),
             TR_Address(paddr, _) => None()
           }

@@ -71,6 +71,7 @@
 type ext_access_type = unit
 
 let Data  : ext_access_type = ()
+let Cbo  : ext_access_type = ()
 
 let default_write_acc : ext_access_type = Data
 

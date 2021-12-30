@@ -139,7 +139,8 @@ function update_PTE_Bits(p : PTE_Bits, a : AccessType(ext_access_type), ext : ex
   let update_d = p.D() == 0b0 & (match a {                                       // dirty-bit
                                   Execute() => false,
                                   Read() => false,
-                                  Write(_) => true,
+                                  Write(Data) => true,
+                                  Write(Cbo) => false,
                                   ReadWrite(_,_) => true
                                 });
 
