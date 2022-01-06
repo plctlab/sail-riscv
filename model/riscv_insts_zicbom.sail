@@ -25,47 +25,28 @@ mapping clause assembly = RISCV_ZICBOM(cbop, rs1)
 
 val process_clean_inval : (xlenbits, xlenbits, bool, bool) -> Retired effect {escape, rmem, rmemt, rreg, wmv, wmvt, wreg}
 function process_clean_inval(vaddr, width, clean, inval) = {
-  let load: option(ExceptionType) = match ext_data_get_addr(zeros(), vaddr, Read(Data), BYTE) {
-    Ext_DataAddr_Error(e) => Some(E_Reserved_14()),
-    Ext_DataAddr_OK(vaddr) =>
-      match translateAddr(vaddr, Read(Cbo)) {
-        TR_Failure(e, _) => Some(e),
-        TR_Address(paddr, _) => None()
-      }
-  };
-  match load {
-    None() => RETIRE_SUCCESS,
-    Some(le) => {
-      let store: option(ExceptionType) = match ext_data_get_addr(zeros(), vaddr, Write(Data), BYTE) {
-        Ext_DataAddr_Error(e) => Some(E_Reserved_14()),
-        Ext_DataAddr_OK(vaddr) =>
-          match translateAddr(vaddr, Write(Cbo)) {
-            TR_Failure(e, _) => Some(e),
-            TR_Address(paddr, _) => None()
-          }
+  match ext_data_get_addr(zeros(), vaddr, Cbo(Data), BYTE) {
+    Ext_DataAddr_Error(e) => { ext_handle_data_check_error(e); RETIRE_FAIL },
+    Ext_DataAddr_OK(vaddr) => {
+      let data: option(ExceptionType) = match translateAddr(vaddr, Cbo(Data)) {
+        TR_Address(paddr, _) =>  pmpCheck_xlen(paddr, width, Cbo(Data), cur_privilege),
+        TR_Failure(e, _) => Some(e)
       };
-      match store {
+      match data {
         None() => RETIRE_SUCCESS,
-        Some(se) => {
-          let fetch: option(ExceptionType) = match ext_control_check_addr(vaddr) {
-            Ext_ControlAddr_Error(e) => Some(E_Reserved_14()),
-            Ext_ControlAddr_OK(vaddr) =>
-              match translateAddr(vaddr, Execute()) {
-                TR_Failure(e, _) => Some(e),
-                TR_Address(paddr, _) => None()
-              }
+        Some(de) => {
+          let fetch: option(ExceptionType) = match translateAddr(vaddr, Cbo(Fetch)) {
+            TR_Address(paddr, _) => pmpCheck_xlen(paddr, width, Cbo(Fetch), cur_privilege),
+            TR_Failure(e, _) => Some(e)
           };
           match fetch {
             None() => RETIRE_SUCCESS,
             Some(fe) =>
-              match (le, se, fe) {
-                (E_Load_Access_Fault(), _, _) => { handle_mem_exception(vaddr, E_SAMO_Access_Fault()); RETIRE_FAIL },
-                (_, E_SAMO_Access_Fault(), _) => { handle_mem_exception(vaddr, E_SAMO_Access_Fault()); RETIRE_FAIL },
-                (_, _, E_Fetch_Access_Fault()) => { handle_mem_exception(vaddr, E_SAMO_Access_Fault()); RETIRE_FAIL },
-                (E_Load_Page_Fault(), _, _) => { handle_mem_exception(vaddr, E_SAMO_Page_Fault()); RETIRE_FAIL },
-                (_, E_SAMO_Page_Fault(), _) => { handle_mem_exception(vaddr, E_SAMO_Page_Fault()); RETIRE_FAIL },
-                (_, _, E_Fetch_Page_Fault()) => { handle_mem_exception(vaddr, E_SAMO_Page_Fault()); RETIRE_FAIL },
-                (E_Extension(e), _, _) => { ext_handle_data_check_error(e); RETIRE_FAIL }
+              match (de, fe) {
+                (E_SAMO_Access_Fault(), _) => { handle_mem_exception(vaddr, E_SAMO_Access_Fault()); RETIRE_FAIL },
+                (_, E_SAMO_Access_Fault()) => { handle_mem_exception(vaddr, E_SAMO_Access_Fault()); RETIRE_FAIL },
+                (E_SAMO_Page_Fault(), _) => { handle_mem_exception(vaddr, E_SAMO_Page_Fault()); RETIRE_FAIL },
+                (_, E_SAMO_Page_Fault()) => { handle_mem_exception(vaddr, E_SAMO_Page_Fault()); RETIRE_FAIL }
               }
           }
         }

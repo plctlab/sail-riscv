@@ -100,7 +100,9 @@ function pmpCheckRWX(ent, acc) = {
     Read(_)      => ent.R() == 0b1,
     Write(_)     => ent.W() == 0b1,
     ReadWrite(_) => ent.R() == 0b1 & ent.W() == 0b1,
-    Execute()    => ent.X() == 0b1
+    Execute()    => ent.X() == 0b1,
+    Cbo(Data)    => ent.R() == 0b1 | ent.W() == 0b1,
+    Cbo(Fetch)   => ent.X() == 0b1
   }
 }
 
@@ -149,10 +151,8 @@ function pmpMatchEntry(addr: xlenbits, width: xlenbits, acc: AccessType(ext_acce
 }
 
 /* priority checks */
-
-function pmpCheck forall 'n, 'n > 0. (addr: xlenbits, width: atom('n), acc: AccessType(ext_access_type), priv: Privilege)
+function pmpCheck_xlen (addr: xlenbits, width: xlenbits, acc: AccessType(ext_access_type), priv: Privilege)
                   -> option(ExceptionType) = {
-  let width : xlenbits = to_bits(sizeof(xlen), width);
   let check : bool =
   match pmpMatchEntry(addr, width, acc, priv, pmp0cfg, pmpaddr0, zeros()) {
     PMP_Success  => true,
@@ -222,15 +222,21 @@ function pmpCheck forall 'n, 'n > 0. (addr: xlenbits, width: atom('n), acc: Acce
                       _       => false
                     }
   }}}}}}}}}}}}}}}};
-
   if   check
   then None()
   else match acc {
     Read(_)      => Some(E_Load_Access_Fault()),
     Write(_)     => Some(E_SAMO_Access_Fault()),
     ReadWrite(_) => Some(E_SAMO_Access_Fault()),
-    Execute()    => Some(E_Fetch_Access_Fault())
+    Execute()    => Some(E_Fetch_Access_Fault()),
+    Cbo(_)       => Some(E_SAMO_Access_Fault())
   }
+}
+
+function pmpCheck forall 'n, 'n > 0. (addr: xlenbits, width: atom('n), acc: AccessType(ext_access_type), priv: Privilege)
+                  -> option(ExceptionType) = {
+  let width : xlenbits = to_bits(sizeof(xlen), width);
+  pmpCheck_xlen(addr, width, acc, priv)
 }
 
 function init_pmp() -> unit = {

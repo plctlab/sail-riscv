@@ -827,9 +827,14 @@ bitfield Envcfg : xlenbits = {
 register senvcfg : Envcfg
 register menvcfg : Envcfg
 
-function legalize_envcfg(c : Envcfg, v : xlenbits) -> Envcfg = {
-  let c = update_CBZE(c, [v[7]]);
+function legalize_envcfg_cbie(o : bits(2), v : bits(2)) -> bits(2) = match (v) {
+  0b10 => 0b00,
+  _ => v
+}
+
+function legalize_envcfg(o : Envcfg, v : xlenbits) -> Envcfg = {
+  let c = update_CBZE(o, [v[7]]);
   let c = update_CBCFE(c, [v[6]]);
-  let c = update_CBIE(c, v[5 .. 4]);
+  let c = update_CBIE(c, legalize_envcfg_cbie(o.CBIE(), v[5 .. 4]));
   c
 }
