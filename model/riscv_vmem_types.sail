@@ -71,7 +71,6 @@
 type ext_access_type = unit
 
 let Data  : ext_access_type = ()
-let Fetch : ext_access_type = ()
 
 let default_write_acc : ext_access_type = Data
 
@@ -81,8 +80,7 @@ function accessType_to_str (a) =
     Read(_)            => "R",
     Write(_)           => "W",
     ReadWrite(_, _)    => "RW",
-    Execute()          => "X",
-    Cbo(_)             => "RWX"
+    Execute()          => "X"
   }
 
 overload to_str = {accessType_to_str}

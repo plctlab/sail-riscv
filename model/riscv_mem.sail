@@ -118,7 +118,7 @@ function phys_mem_read forall 'n, 0 < 'n <= max_mem_access . (t : AccessType(ext
   }) : option((bits(8 * 'n), mem_meta));
   match (t, result) {
     (Execute(),  None()) => MemException(E_Fetch_Access_Fault()),
-    (Read(_), None()) => MemException(E_Load_Access_Fault()),
+    (Read(Data), None()) => MemException(E_Load_Access_Fault()),
     (_,          None()) => MemException(E_SAMO_Access_Fault()),
     (_,      Some(v, m)) => { if   get_config_print_mem()
                               then print_mem("mem[" ^ to_str(t) ^ "," ^ BitStr(paddr) ^ "] -> " ^ BitStr(v));
@@ -136,7 +136,7 @@ function checked_mem_read forall 'n, 0 < 'n <= max_mem_access . (t : AccessType(
     Ext_PhysAddr_Error(e) => MemException(e)
   } else match t {
     Execute()  => MemException(E_Fetch_Access_Fault()),
-    Read(_) => MemException(E_Load_Access_Fault()),
+    Read(Data) => MemException(E_Load_Access_Fault()),
     _          => MemException(E_SAMO_Access_Fault())
   }
 

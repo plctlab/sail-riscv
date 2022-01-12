@@ -342,7 +342,7 @@ char *process_args(int argc, char **argv)
 #endif
     case 'B':
       block_size = atol(optarg);
-      if (((block_size & 7) == 0) && (block_size < 4096)) {
+      if (((block_size & (block_size - 1)) == 0) && (block_size < 4096)) {
         fprintf(stderr, "setting cache-block-size to %" PRIu64 " B\n", block_size);
         rv_cache_block_size = block_size;
       } else {

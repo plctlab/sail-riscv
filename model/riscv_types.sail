@@ -168,7 +168,6 @@ enum Retired = {RETIRE_SUCCESS, RETIRE_FAIL}
 union AccessType ('a : Type) = {
   Read      : 'a,
   Write     : 'a,
-  Cbo       : 'a,
   ReadWrite : ('a, 'a),
   Execute   : unit
 }
@@ -391,8 +390,7 @@ enum amoop = {AMOSWAP, AMOADD, AMOXOR, AMOAND, AMOOR,
               AMOMIN, AMOMAX, AMOMINU, AMOMAXU}   /* AMO ops */
 enum csrop = {CSRRW, CSRRS, CSRRC}                /* CSR ops */
 
-enum cbop_zicbom = {CBO_CLEAN, CBO_FLUSH, CBO_INVAL}  /* zicbom ops */
-enum prop_zicbop = {PREFETCH_I, PREFETCH_R, PREFETCH_W} /* zicbop ops */
+enum cbop_zicbom = {CBO_CLEAN, CBO_FLUSH, CBO_INVAL}  /* zicbom ops*/
 
 enum brop_zba = {RISCV_SH1ADD, RISCV_SH2ADD, RISCV_SH3ADD}
 

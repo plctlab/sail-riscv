@@ -266,7 +266,7 @@ function clint_load(t, addr, width) = {
     then print_platform("clint[" ^ BitStr(addr) ^ "] -> <not-mapped>");
     match t {
       Execute()  => MemException(E_Fetch_Access_Fault()),
-      Read(_) => MemException(E_Load_Access_Fault()),
+      Read(Data) => MemException(E_Load_Access_Fault()),
       _          => MemException(E_SAMO_Access_Fault())
     }
   }
@@ -380,7 +380,7 @@ function htif_load(t, paddr, width) = {
   then    MemValue(sail_zero_extend(htif_tohost[63..32], 32)) /* FIXME: Redundant zero_extend currently required by Lem backend */
   else match t {
     Execute()  => MemException(E_Fetch_Access_Fault()),
-    Read(_) => MemException(E_Load_Access_Fault()),
+    Read(Data) => MemException(E_Load_Access_Fault()),
     _          => MemException(E_SAMO_Access_Fault())
   }
 }
@@ -473,7 +473,7 @@ function mmio_read forall 'n, 0 < 'n <= max_mem_access . (t : AccessType(ext_acc
   then htif_load(t, paddr, width)
   else match t {
     Execute()  => MemException(E_Fetch_Access_Fault()),
-    Read(_) => MemException(E_Load_Access_Fault()),
+    Read(Data) => MemException(E_Load_Access_Fault()),
     _          => MemException(E_SAMO_Access_Fault())
   }
 

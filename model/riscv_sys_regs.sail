@@ -201,7 +201,6 @@ function haveZknd()   -> bool = true
 /* Cache Management Operations extension support. */
 function haveZicbom() -> bool = true
 function haveZicboz() -> bool = true
-function haveZicbop() -> bool = true
 
 bitfield Mstatush : bits(32) = {
   MBE  : 5,

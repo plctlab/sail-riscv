@@ -125,15 +125,11 @@ function checkPTEPermission(ac : AccessType(ext_access_type), priv : Privilege, 
     (Write(_),        User)       => to_pte_check(p.U() == 0b1 & p.W() == 0b1),
     (ReadWrite(_, _), User)       => to_pte_check(p.U() == 0b1 & p.W() == 0b1 & (p.R() == 0b1 | (p.X() == 0b1 & mxr))),
     (Execute(),       User)       => to_pte_check(p.U() == 0b1 & p.X() == 0b1),
-    (Cbo(Data),       User)       => to_pte_check(p.U() == 0b1 & (p.W() == 0b1 | (p.R() == 0b1 | (p.X() == 0b1 & mxr)))),
-    (Cbo(Fetch),      User)       => to_pte_check(p.U() == 0b1 & p.X() == 0b1),
 
     (Read(_),         Supervisor) => to_pte_check((p.U() == 0b0 | do_sum) & (p.R() == 0b1 | (p.X() == 0b1 & mxr))),
     (Write(_),        Supervisor) => to_pte_check((p.U() == 0b0 | do_sum) & p.W() == 0b1),
     (ReadWrite(_, _), Supervisor) => to_pte_check((p.U() == 0b0 | do_sum) & p.W() == 0b1 & (p.R() == 0b1 | (p.X() == 0b1 & mxr))),
     (Execute(),       Supervisor) => to_pte_check(p.U() == 0b0 & p.X() == 0b1),
-    (Cbo(Data),       Supervisor) => to_pte_check((p.U() == 0b1 | do_sum) & (p.W() == 0b1 | (p.R() == 0b1 | (p.X() == 0b1 & mxr)))),
-    (Cbo(Fetch),      Supervisor) => to_pte_check(p.U() == 0b0 & p.X() == 0b1),
 
     (_,               Machine)    => internal_error("m-mode mem perm check")
   }
@@ -143,8 +139,7 @@ function update_PTE_Bits(p : PTE_Bits, a : AccessType(ext_access_type), ext : ex
   let update_d = p.D() == 0b0 & (match a {                                       // dirty-bit
                                   Execute() => false,
                                   Read() => false,
-                                  Write(Data) => true,
-                                  Cbo(_) => false,
+                                  Write(_) => true,
                                   ReadWrite(_,_) => true
                                 });
 
