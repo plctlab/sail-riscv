@@ -101,6 +101,15 @@ float16_t
 
 /*----------------------------------------------------------------------------
 *----------------------------------------------------------------------------*/
+#define signBF16UI( a ) ((bool) ((uint16_t) (a)>>15))
+#define expBF16UI( a ) ((int_fast16_t) ((a)>>7) & 0xFF)
+#define fracBF16UI( a ) ((a) & 0x07F)
+#define packToBF16UI( sign, exp, sig ) (((uint16_t) (sign)<<15) + ((uint16_t) (exp)<<7) + (sig))
+
+bfloat16_t softfloat_roundPackToBF16( bool, int_fast16_t, uint_fast16_t );
+
+/*----------------------------------------------------------------------------
+*----------------------------------------------------------------------------*/
 #define signF32UI( a ) ((bool) ((uint32_t) (a)>>31))
 #define expF32UI( a ) ((int_fast16_t) ((a)>>23) & 0xFF)
 #define fracF32UI( a ) ((a) & 0x007FFFFF)

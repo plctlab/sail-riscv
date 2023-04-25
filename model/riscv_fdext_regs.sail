@@ -85,6 +85,7 @@
 /* they must be 'NaN unboxed'.                                      */
 
 function canonical_NaN_H() -> bits(16) = 0x_7e00
+function canonical_NaN_BF16() -> bits(16) = 0x_7fc0
 function canonical_NaN_S() -> bits(32) = 0x_7fc0_0000
 function canonical_NaN_D() -> bits(64) = 0x_7ff8_0000_0000_0000
 
@@ -103,6 +104,16 @@ function nan_unbox_H   regval =
   else if regval [63..16] == 0x_FFFF_FFFF_FFFF
        then regval [15..0]
        else canonical_NaN_H()
+
+val      nan_unbox_BF16 : flenbits -> bits(16)
+function nan_unbox_BF16   regval =
+  if (sizeof(flen) == 32)
+  then if regval [32..16] == 0x_FFFF
+       then regval [15..0]
+       else canonical_NaN_BF16()
+  else if regval [63..16] == 0x_FFFF_FFFF_FFFF
+       then regval [15..0]
+       else canonical_NaN_BF16()
 
 val nan_box_S : bits(32) -> flenbits effect {escape}
 function nan_box_S val_32b = {
@@ -279,6 +290,15 @@ function rF_or_X_H(i) = {
   else X(i)[15..0]
 }
 
+val rF_or_X_BF16 : bits(5) -> bits(16) effect {escape, rreg}
+function rF_or_X_BF16(i) = {
+  assert(sizeof(flen) >= 32);
+  assert(sys_enable_fdext() != sys_enable_zfinx());
+  if   sys_enable_fdext()
+  then nan_unbox_BF16(F(i))
+  else X(i)[15..0]
+}
+
 val rF_or_X_S : bits(5) -> bits(32) effect {escape, rreg}
 function rF_or_X_S(i) = {
   assert(sizeof(flen) >= 32);
@@ -337,6 +357,7 @@ function wF_or_X_D(i, data) = {
   }
 }
 
+overload F_or_X_BF16 = { rF_or_X_BF16, wF_or_X_H }
 overload F_or_X_H = { rF_or_X_H, wF_or_X_H }
 overload F_or_X_S = { rF_or_X_S, wF_or_X_S }
 overload F_or_X_D = { rF_or_X_D, wF_or_X_D }

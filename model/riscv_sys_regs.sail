@@ -191,6 +191,9 @@ function haveZbs()  -> bool = true
 /* Zfh (half-precision) extension */
 function haveZfh()  -> bool = true
 
+/* BF16 extensions */
+function haveZfbfmin() -> bool = true
+
 /* Scalar Cryptography extensions support. */
 function haveZbkb() -> bool = true
 function haveZbkc() -> bool = true

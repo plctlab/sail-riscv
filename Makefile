@@ -29,6 +29,7 @@ SAIL_DEFAULT_INST += riscv_insts_zbc.sail
 SAIL_DEFAULT_INST += riscv_insts_zbs.sail
 
 SAIL_DEFAULT_INST += riscv_insts_zfh.sail
+SAIL_DEFAULT_INST += riscv_insts_zfbfmin.sail
 
 SAIL_DEFAULT_INST += riscv_insts_zkn.sail
 SAIL_DEFAULT_INST += riscv_insts_zks.sail
