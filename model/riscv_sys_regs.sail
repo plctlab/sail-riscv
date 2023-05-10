@@ -358,6 +358,7 @@ function haveDExt()    -> bool = (misa.D() == 0b1) & (mstatus.FS() != 0b00)
 function haveZhinx()   -> bool = sys_enable_zfinx()
 function haveZfinx()   -> bool = sys_enable_zfinx()
 function haveZdinx()   -> bool = sys_enable_zfinx() & sizeof(flen) >= 64
+function haveZfbfinxmin()   -> bool = sys_enable_zfinx()
 
 /* interrupt processing state */
 

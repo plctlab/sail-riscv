@@ -73,6 +73,11 @@
 
 /* **************************************************************** */
 
+/* **************************************************************** */
+/* Helper functions for 'encdec()'                                  */
+
+function haveBF16FPU() -> bool = haveZfbfmin() | haveZfbfinxmin()
+
 /* AST */
 
 union clause ast = F_UN_RM_TYPE_BF16 : (regidx, rounding_mode, regidx, f_un_rm_op_BF16)
@@ -80,12 +85,12 @@ union clause ast = F_UN_RM_TYPE_BF16 : (regidx, rounding_mode, regidx, f_un_rm_o
 /* AST <-> Binary encoding ================================ */
 
 mapping clause encdec =
-    F_UN_RM_TYPE_BF16(rs1, rm, rd, FCVT_BF16_S)                               if haveZfbfmin()
-<-> 0b010_0010 @ 0b01000 @ rs1 @ encdec_rounding_mode (rm) @ rd @ 0b101_0011  if haveZfbfmin()
+    F_UN_RM_TYPE_BF16(rs1, rm, rd, FCVT_BF16_S)                               if haveBF16FPU()
+<-> 0b010_0010 @ 0b01000 @ rs1 @ encdec_rounding_mode (rm) @ rd @ 0b101_0011  if haveBF16FPU()
 
 mapping clause encdec =
-    F_UN_RM_TYPE_BF16(rs1, rm, rd, FCVT_S_BF16)                               if haveZfbfmin()
-<-> 0b010_0000 @ 0b00110 @ rs1 @ encdec_rounding_mode (rm) @ rd @ 0b101_0011  if haveZfbfmin()
+    F_UN_RM_TYPE_BF16(rs1, rm, rd, FCVT_S_BF16)                               if haveBF16FPU()
+<-> 0b010_0000 @ 0b00110 @ rs1 @ encdec_rounding_mode (rm) @ rd @ 0b101_0011  if haveBF16FPU()
 
 /* Execution semantics ================================ */
 
